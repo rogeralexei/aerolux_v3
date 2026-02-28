@@ -116,19 +116,6 @@ export default function TeamPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-secondary/20">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-strong">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2 hover:scale-105 transition-transform">
-              <ArrowLeft className="h-5 w-5 text-primary" />
-              <Plane className="h-8 w-8 text-primary" />
-              <span className="font-serif font-bold text-xl">SkyLux Charter</span>
-            </Link>
-            <Button className="animate-glow">Join Our Team</Button>
-          </div>
-        </div>
-      </nav>
 
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

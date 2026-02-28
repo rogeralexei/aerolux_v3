@@ -1,303 +1,369 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import {
-  ArrowLeft,
-  Calendar,
-  MapPin,
-  Users,
-  Clock,
-  Star,
-  Plane,
-  Trophy,
-  Combine as Champagne,
-  Music,
-} from "lucide-react"
-import Link from "next/link"
+import { Calendar, MapPin, X, ArrowRight, Plane, Trophy, Star, Rocket, Car } from "lucide-react"
+
+type Event = {
+  id: number
+  title: string
+  shortTitle: string
+  date: string
+  location: string
+  category: string
+  role: string
+  image: string
+  summary: string
+  body: string[]
+  highlights: string[]
+  icon: React.ElementType
+}
+
+const events: Event[] = [
+  {
+    id: 1,
+    title: "F-Air Colombia 2025",
+    shortTitle: "F-Air Colombia",
+    date: "2025",
+    location: "Colombia",
+    category: "feria",
+    role: "Expositores",
+    image: "/events/fair-colombia.jpg",
+    summary:
+      "Un hito estratégico que consolidó nuestra presencia en el mercado aeronáutico latinoamericano.",
+    body: [
+      "Nuestra participación como expositores en F-AIR Colombia 2025 marcó un hito estratégico para AeroLux Panamá y MITI Group Inc., consolidando nuestra presencia en el mercado aeronáutico latinoamericano.",
+      "F-AIR es uno de los eventos aeronáuticos más importantes de la región, reuniendo fabricantes, operadores, autoridades aeronáuticas, empresas MRO, aviación ejecutiva y defensa. Nuestra presencia no fue únicamente comercial; fue una declaración clara de expansión regional.",
+      "F-AIR 2025 reafirmó nuestra visión: consolidar el futuro de la aviación privada y ejecutiva en la región.",
+    ],
+    highlights: [
+      "Presentamos nuestro portafolio integral de servicios: vuelos charter, operaciones VIP y soluciones corporativas.",
+      "Fortalecimos relaciones con fabricantes, proveedores estratégicos y potenciales aliados en Colombia y Centroamérica.",
+      "Exploramos nuevas oportunidades de representación y alianzas técnicas.",
+      "Posicionamos a AeroLux Panamá como operador dinámico, moderno y en crecimiento.",
+    ],
+    icon: Plane,
+  },
+  {
+    id: 2,
+    title: "Fly-In Cartago 2024",
+    shortTitle: "Fly-In Cartago",
+    date: "2024",
+    location: "Cartago, Colombia",
+    category: "aviacion",
+    role: "Expositores",
+    image: "/events/fly-in-cartago.jpg",
+    summary:
+      "Reafirmamos nuestro compromiso con la aviación general en Centroamérica y exploramos mercados de expansión.",
+    body: [
+      "Nuestra participación como expositores en Fly-In Cartago 2024 reafirmó nuestro compromiso con la aviación general en Centroamérica.",
+      "Este evento, organizado por la comunidad aeronáutica regional, reúne pilotos, propietarios de aeronaves, escuelas de vuelo y empresas del sector.",
+      "Más allá de una exposición, fue un espacio de networking de alto valor para fortalecer la presencia de AeroLux en la aviación general regional.",
+    ],
+    highlights: [
+      "Presentamos nuestras operaciones de ala fija y ala rotativa.",
+      "Generamos alianzas con operadores de la región.",
+      "Exploramos oportunidades de expansión hacia Costa Rica y Centroamérica.",
+      "Conectamos con pilotos y propietarios interesados en servicios especializados.",
+    ],
+    icon: Plane,
+  },
+  {
+    id: 3,
+    title: "Ferrari Track Day 2025",
+    shortTitle: "Ferrari Track Day",
+    date: "2025",
+    location: "Panamá",
+    category: "lujo",
+    role: "Patrocinadores",
+    image: "/events/ferrari-track-day.jpg",
+    summary:
+      "La sinergia natural entre la aviación ejecutiva y el mundo del alto rendimiento automotriz.",
+    body: [
+      "Nuestra participación como patrocinadores en el Ferrari Track Day 2025 consolidó la sinergia natural entre la aviación ejecutiva y el mundo del alto rendimiento automotriz.",
+      "AeroLux Panamá comparte con Ferrari los valores de precisión, exclusividad, desempeño y pasión por la ingeniería. Este evento reunió a propietarios, empresarios y amantes del lujo en un entorno de alto nivel.",
+      "El Ferrari Track Day fue más que un patrocinio: fue una experiencia que alineó nuestra marca con el concepto de excelencia y exclusividad.",
+    ],
+    highlights: [
+      "Fortalecimos nuestra presencia en el segmento premium.",
+      "Conectamos con clientes potenciales del mercado VIP.",
+      "Posicionamos nuestros servicios charter como extensión del estilo de vida de alto rendimiento.",
+      "Reforzamos alianzas estratégicas con marcas de lujo.",
+    ],
+    icon: Car,
+  },
+  {
+    id: 4,
+    title: "Concurso Colombiano de Cohetería Deportiva ALAS",
+    shortTitle: "Cohetería ALAS",
+    date: "2025",
+    location: "Colombia",
+    category: "aeroespacial",
+    role: "Patrocinadores",
+    image: "/events/coheteria-alas.jpg",
+    summary:
+      "Apoyando el futuro del talento técnico y científico aeroespacial de Latinoamérica.",
+    body: [
+      "En alianza con ALAS, participamos como patrocinadores del Concurso Colombiano de Cohetería Deportiva 2025, un evento que impulsa la innovación, la ingeniería y el talento joven en el sector aeroespacial.",
+      "Este evento representa la evolución natural del ecosistema aeronáutico hacia el ámbito espacial. Para MITI Group y AeroLux, apoyar este tipo de iniciativas significa invertir en el futuro del talento técnico y científico de la región.",
+      "Este patrocinio refuerza nuestra visión de crecimiento no solo en aviación, sino también en el ecosistema aeroespacial regional.",
+    ],
+    highlights: [
+      "Apoyo al desarrollo STEM y a la ingeniería aeroespacial.",
+      "Vinculación con jóvenes talentos y universidades.",
+      "Posicionamiento como empresa comprometida con la innovación tecnológica.",
+      "Integración con proyectos aeroespaciales emergentes en Latinoamérica.",
+    ],
+    icon: Rocket,
+  },
+]
+
+const categoryColors: Record<string, string> = {
+  feria: "bg-primary/10 border-primary/20 text-primary",
+  aviacion: "bg-primary/10 border-primary/20 text-primary",
+  lujo: "bg-primary/10 border-primary/20 text-primary",
+  aeroespacial: "bg-primary/10 border-primary/20 text-primary",
+}
 
 export default function EventsPage() {
-  const [selectedCategory, setSelectedCategory] = useState("all")
-
-  const events = [
-    {
-      id: 1,
-      title: "Monaco Grand Prix VIP Experience",
-      date: "May 25-28, 2024",
-      location: "Monaco, French Riviera",
-      category: "sports",
-      price: "From $45,000",
-      image: "Monaco Grand Prix with luxury yachts and private jets",
-      description: "Experience the pinnacle of motorsport luxury with exclusive access to the Monaco Grand Prix.",
-      highlights: ["Paddock Club Access", "Private Yacht Party", "Helicopter Transfers", "Michelin Star Dining"],
-      duration: "4 Days",
-      capacity: "12 Guests",
-      status: "Available",
-    },
-    {
-      id: 2,
-      title: "Aspen Winter Luxury Retreat",
-      date: "December 15-22, 2024",
-      location: "Aspen, Colorado",
-      category: "lifestyle",
-      price: "From $28,000",
-      image: "luxury ski resort in Aspen with private jets on snowy runway",
-      description: "Ultimate winter luxury experience in the heart of the Rocky Mountains.",
-      highlights: ["Private Ski Lessons", "Luxury Lodge Stay", "Spa Treatments", "Gourmet Mountain Dining"],
-      duration: "7 Days",
-      capacity: "8 Guests",
-      status: "Limited",
-    },
-    {
-      id: 3,
-      title: "Maldives Exclusive Island Charter",
-      date: "March 10-17, 2024",
-      location: "Maldives, Indian Ocean",
-      category: "luxury",
-      price: "From $65,000",
-      image: "private island resort in Maldives with seaplane and luxury overwater villas",
-      description: "Private island experience with unparalleled luxury and pristine natural beauty.",
-      highlights: ["Private Island Access", "Overwater Villa", "Personal Butler", "Underwater Dining"],
-      duration: "7 Days",
-      capacity: "6 Guests",
-      status: "Exclusive",
-    },
-    {
-      id: 4,
-      title: "Napa Valley Wine & Dine Experience",
-      date: "September 8-11, 2024",
-      location: "Napa Valley, California",
-      category: "culinary",
-      price: "From $18,000",
-      image: "luxury vineyard in Napa Valley with private jet and wine tasting",
-      description: "Exclusive wine country experience with world-renowned vintners and chefs.",
-      highlights: ["Private Vineyard Tours", "Master Sommelier", "Chef's Table Dinners", "Luxury Estate Stay"],
-      duration: "4 Days",
-      capacity: "10 Guests",
-      status: "Available",
-    },
-    {
-      id: 5,
-      title: "Art Basel Miami VIP Access",
-      date: "December 6-10, 2024",
-      location: "Miami, Florida",
-      category: "culture",
-      price: "From $22,000",
-      image: "modern art gallery in Miami with luxury private jet and contemporary art",
-      description: "Immerse yourself in the world's premier contemporary art fair with exclusive access.",
-      highlights: ["VIP Preview Access", "Private Gallery Tours", "Artist Meet & Greets", "Luxury Beach Resort"],
-      duration: "5 Days",
-      capacity: "8 Guests",
-      status: "Available",
-    },
-    {
-      id: 6,
-      title: "Northern Lights Arctic Adventure",
-      date: "February 12-18, 2024",
-      location: "Tromsø, Norway",
-      category: "adventure",
-      price: "From $35,000",
-      image: "northern lights over arctic landscape with luxury ice hotel and private jet",
-      description: "Witness the magical Aurora Borealis in ultimate comfort and style.",
-      highlights: ["Glass Igloo Stay", "Husky Sledding", "Private Aurora Guide", "Ice Hotel Experience"],
-      duration: "6 Days",
-      capacity: "6 Guests",
-      status: "Limited",
-    },
-  ]
-
-  const categories = [
-    { id: "all", label: "All Events", icon: Star },
-    { id: "sports", label: "Sports", icon: Trophy },
-    { id: "lifestyle", label: "Lifestyle", icon: Champagne },
-    { id: "luxury", label: "Luxury", icon: Star },
-    { id: "culinary", label: "Culinary", icon: Music },
-    { id: "culture", label: "Culture", icon: Music },
-    { id: "adventure", label: "Adventure", icon: Plane },
-  ]
-
-  const filteredEvents =
-    selectedCategory === "all" ? events : events.filter((event) => event.category === selectedCategory)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-secondary/20">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-strong">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-2 hover:scale-105 transition-transform">
-              <ArrowLeft className="h-5 w-5 text-primary" />
-              <Plane className="h-8 w-8 text-primary" />
-              <span className="font-serif font-bold text-xl">Aerolux Charter</span>
-            </Link>
-            <Button className="animate-glow">Book Event</Button>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen mt-4 bg-gradient-to-br from-background via-muted/30 to-secondary/20">
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl"></div>
+      {/* Hero */}
+      <section className="pt-28 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl" />
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
-            initial={{ y: 50, opacity: 0 }}
+            initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               className="inline-flex items-center glass rounded-full px-6 py-3 mb-8"
             >
-              <Calendar className="h-5 w-5 text-primary mr-2" />
-              <span className="text-sm font-medium">Exclusive Events</span>
+              <Calendar className="h-4 w-4 text-primary mr-2" />
+              <span className="text-sm font-medium">Presencia</span>
             </motion.div>
-            <h1 className="font-serif font-bold text-5xl md:text-6xl lg:text-7xl mb-8 bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent">
-              Curated Experiences
+
+            <h1 className="font-serif font-bold text-5xl md:text-6xl lg:text-7xl mb-6 bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
+              Donde estamos,
+              <br />
+              dejamos huella.
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-              Join us for extraordinary events and exclusive experiences around the world. Each journey is carefully
-              crafted to create unforgettable memories.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Ferias internacionales, patrocinios de alto perfil y eventos aeronáuticos que consolidan nuestra presencia en la región.
             </p>
           </motion.div>
 
-          {/* Category Filter */}
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4 mb-16"
-          >
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
-                className={`glass ${selectedCategory === category.id ? "animate-glow" : "border-primary/30 hover:bg-primary/10"}`}
-                onClick={() => setSelectedCategory(category.id)}
-              >
-                <category.icon className="h-4 w-4 mr-2" />
-                {category.label}
-              </Button>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Events Grid */}
-      <section className="pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8">
-            {filteredEvents.map((event, index) => (
-              <motion.div
-                key={event.id}
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="group"
-              >
-                <Card className="glass-strong overflow-hidden hover:scale-105 transition-all duration-500 relative">
-                  <div className="relative h-80 overflow-hidden">
+          {/* Events Grid */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {events.map((event, i) => {
+              const Icon = event.icon
+              return (
+                <motion.div
+                  key={event.id}
+                  initial={{ y: 60, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: i * 0.12 }}
+                  onClick={() => setSelectedEvent(event)}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative h-72 rounded-2xl overflow-hidden glass-strong border border-white/5 hover:border-primary/20 transition-all duration-500">
+                    {/* Image */}
                     <img
-                      src={`/abstract-geometric-shapes.png?height=500&width=800&query=${event.image}`}
+                      src={event.image}
                       alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      onError={(e) => {
+                        // Fallback gradient if image not found
+                        const target = e.target as HTMLImageElement
+                        target.style.display = "none"
+                      }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
 
-                    {/* Status Badge */}
-                    <div
-                      className={`absolute top-4 right-4 glass rounded-full px-3 py-1 ${
-                        event.status === "Exclusive"
-                          ? "bg-primary/20 border-primary/30"
-                          : event.status === "Limited"
-                            ? "bg-yellow-500/20 border-yellow-500/30"
-                            : "bg-green-500/20 border-green-500/30"
-                      }`}
-                    >
-                      <span
-                        className={`text-xs font-medium ${
-                          event.status === "Exclusive"
-                            ? "text-primary"
-                            : event.status === "Limited"
-                              ? "text-yellow-500"
-                              : "text-green-500"
-                        }`}
-                      >
-                        {event.status}
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+                    {/* Role badge */}
+                    <div className="absolute top-4 left-4">
+                      <span className={`text-xs font-semibold tracking-widest uppercase border rounded-full px-3 py-1 ${categoryColors[event.category]}`}>
+                        {event.role}
                       </span>
                     </div>
 
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <div className="flex items-center mb-2">
-                        <MapPin className="h-4 w-4 text-primary mr-2" />
-                        <span className="text-sm text-white/80">{event.location}</span>
+                    {/* Icon */}
+                    <div className="absolute top-4 right-4 glass rounded-full p-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                      <Icon className="h-4 w-4 text-primary" />
+                    </div>
+
+                    {/* Bottom content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <div className="flex items-center gap-2 mb-2 text-white/50 text-xs tracking-wider">
+                        <MapPin className="h-3 w-3" />
+                        <span>{event.location}</span>
+                        <span>·</span>
+                        <Calendar className="h-3 w-3" />
+                        <span>{event.date}</span>
                       </div>
-                      <h3 className="font-serif font-bold text-2xl text-white mb-2">{event.title}</h3>
-                      <div className="flex items-center text-white/90 mb-4">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{event.date}</span>
+                      <h3 className="font-serif font-bold text-xl text-white mb-2 leading-snug">
+                        {event.title}
+                      </h3>
+                      <p className="text-white/60 text-sm leading-relaxed line-clamp-2 mb-4">
+                        {event.summary}
+                      </p>
+                      <div className="flex items-center gap-2 text-primary text-sm font-medium group-hover:gap-3 transition-all duration-300">
+                        <span>Ver más</span>
+                        <ArrowRight className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
-
-                  <div className="p-8">
-                    <p className="text-muted-foreground mb-6 leading-relaxed">{event.description}</p>
-
-                    {/* Event Details */}
-                    <div className="grid grid-cols-3 gap-4 mb-6">
-                      <div className="text-center">
-                        <Clock className="h-5 w-5 text-primary mx-auto mb-2" />
-                        <div className="text-sm font-medium">{event.duration}</div>
-                      </div>
-                      <div className="text-center">
-                        <Users className="h-5 w-5 text-primary mx-auto mb-2" />
-                        <div className="text-sm font-medium">{event.capacity}</div>
-                      </div>
-                      <div className="text-center">
-                        <Star className="h-5 w-5 text-primary mx-auto mb-2" />
-                        <div className="text-sm font-medium">VIP Access</div>
-                      </div>
-                    </div>
-
-                    {/* Highlights */}
-                    <div className="mb-6">
-                      <h4 className="font-serif font-bold text-lg mb-3">Experience Highlights</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {event.highlights.map((highlight) => (
-                          <div key={highlight} className="flex items-center">
-                            <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
-                            <span className="text-sm text-muted-foreground">{highlight}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Price and Action */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm text-muted-foreground">Starting from</div>
-                        <div className="font-serif font-bold text-2xl text-primary">{event.price}</div>
-                      </div>
-                      <Button className="animate-glow group">
-                        Reserve Now
-                        <Calendar className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </section>
+
+      {/* 50/50 Split Panel */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <motion.div
+            key="overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-stretch"
+            style={{ backdropFilter: "blur(4px)", background: "rgba(0,0,0,0.5)" }}
+            onClick={() => setSelectedEvent(null)}
+          >
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 35 }}
+              className="ml-auto w-full flex flex-col md:flex-row h-full shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* LEFT: Image */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="relative md:w-1/2 h-72 md:h-full flex-shrink-0 overflow-hidden bg-black"
+              >
+                <img
+                  src={selectedEvent.image}
+                  alt={selectedEvent.title}
+                  className="w-full h-full object-cover opacity-80"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.style.display = "none"
+                  }}
+                />
+                {/* Diagonal overlay for depth */}
+                <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-transparent to-primary/20" />
+
+                {/* Floating event meta */}
+                <div className="absolute bottom-8 left-8 right-8">
+                  <span className={`text-xs font-semibold tracking-widest uppercase border rounded-full px-3 py-1 ${categoryColors[selectedEvent.category]}`}>
+                    {selectedEvent.role}
+                  </span>
+                  <div className="flex items-center gap-3 mt-4 text-white/60 text-sm">
+                    <MapPin className="h-4 w-4" />
+                    <span>{selectedEvent.location}</span>
+                    <span>·</span>
+                    <span>{selectedEvent.date}</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* RIGHT: Content */}
+              <div
+                className="md:w-1/2 flex flex-col overflow-y-auto"
+                style={{ background: "hsl(0, 0%, 0%, 0.7)" }}
+              >
+                {/* Close button */}
+                <div className="flex justify-end p-6 pb-0 flex-shrink-0">
+                  <button
+                    onClick={() => setSelectedEvent(null)}
+                    className="glass rounded-full p-2 hover:scale-110 transition-transform hover:bg-primary/10"
+                  >
+                    <X className="h-5 w-5 text-foreground/70" />
+                  </button>
+                </div>
+
+                <div className="px-8 pb-10 pt-4 flex flex-col gap-6">
+                  {/* Title */}
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.25, duration: 0.5 }}
+                  >
+                    <h2 className="font-serif font-bold text-3xl md:text-4xl leading-tight mb-3">
+                      {selectedEvent.title}
+                    </h2>
+                    <p className="text-muted-foreground text-lg leading-relaxed">
+                      {selectedEvent.summary}
+                    </p>
+                  </motion.div>
+
+                  {/* Divider */}
+                  <div className="h-px bg-primary/20 w-16" />
+
+                  {/* Body paragraphs */}
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.35, duration: 0.5 }}
+                    className="space-y-4"
+                  >
+                    {selectedEvent.body.map((para, i) => (
+                      <p key={i} className="text-muted-foreground leading-relaxed text-sm">
+                        {para}
+                      </p>
+                    ))}
+                  </motion.div>
+
+                  {/* Highlights */}
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.45, duration: 0.5 }}
+                  >
+                    <h4 className="font-serif font-bold text-lg mb-4 text-foreground">Durante el evento</h4>
+                    <div className="space-y-3">
+                      {selectedEvent.highlights.map((h, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ x: -10, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.5 + i * 0.07 }}
+                          className="flex items-start gap-3"
+                        >
+                          <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                          <p className="text-sm text-muted-foreground leading-relaxed">{h}</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

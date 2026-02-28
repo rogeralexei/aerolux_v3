@@ -1,5 +1,5 @@
 {
-  "name": "my-v0-project",
+  "name": "aerolux-panama",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.31.0",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "1.2.2",

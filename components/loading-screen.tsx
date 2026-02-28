@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Plane } from "lucide-react"
 
 export function LoadingScreen() {
   const [isLoading, setIsLoading] = useState(true)
@@ -39,8 +38,11 @@ export function LoadingScreen() {
               className="mb-8"
             >
               <div className="relative">
-                <Plane className="h-16 w-16 text-primary mx-auto" />
-                <div className="absolute inset-0 h-16 w-16 bg-primary/20 rounded-full blur-xl animate-pulse-red"></div>
+                <img
+                  src="/logo.webp"
+                  alt="Logo"
+                  className="h-16 w-16 mx-auto"
+                />
               </div>
             </motion.div>
 
@@ -50,7 +52,7 @@ export function LoadingScreen() {
               transition={{ delay: 0.2 }}
               className="font-serif font-bold text-4xl mb-4"
             >
-              Aerolux Charter
+              Aerolux Panama
             </motion.h1>
 
             <motion.p
@@ -59,7 +61,7 @@ export function LoadingScreen() {
               transition={{ delay: 0.4 }}
               className="text-muted-foreground mb-8"
             >
-              Preparing your luxury experience...
+              Preparando una experiencia exclusiva...
             </motion.p>
 
             <div className="w-64 h-1 bg-muted rounded-full overflow-hidden mx-auto">
