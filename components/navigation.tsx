@@ -3,23 +3,16 @@
 import React, { useState } from 'react'
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { useRouter } from 'next/navigation'
+import Link from "next/link"
 
 type Props = {
   onOpenDrawer?: () => void
 }
 
+const MotionLink = motion(Link)
+
 function Navigation({ onOpenDrawer }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const router = useRouter()
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" })
-    }
-    setIsMenuOpen(false)
-  }
 
   return (
     <>
@@ -30,21 +23,24 @@ function Navigation({ onOpenDrawer }: Props) {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
+            
             {/* Logo */}
-            <motion.div
+            <MotionLink
+              href="/"
               className="flex items-center space-x-3 cursor-pointer"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
-              onClick={() => router.push("/")}
             >
               <div className="relative">
                 <img src="/logo.webp" alt="Logo" className="h-10 w-10" />
                 <div className="absolute inset-0 h-10 w-10 bg-primary/20 rounded-full blur-md"></div>
               </div>
               <div>
-                <span className="font-serif font-bold text-2xl tracking-tight">Aerolux Panamá</span>
+                <span className="font-serif font-bold text-2xl tracking-tight">
+                  Aerolux Panamá
+                </span>
               </div>
-            </motion.div>
+            </MotionLink>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-12">
@@ -54,9 +50,9 @@ function Navigation({ onOpenDrawer }: Props) {
                 { name: "Eventos", href: "/events" },
                 { name: "Aliados", href: "/partners" },
               ].map((item, index) => (
-                <motion.button
+                <MotionLink
                   key={item.name}
-                  onClick={() => router.push(item.href)}
+                  href={item.href}
                   className="relative text-foreground/80 hover:text-foreground transition-all duration-300 text-sm font-medium tracking-wide group"
                   whileHover={{ y: -2 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -65,7 +61,7 @@ function Navigation({ onOpenDrawer }: Props) {
                 >
                   {item.name}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-                </motion.button>
+                </MotionLink>
               ))}
 
               <motion.div
@@ -110,17 +106,19 @@ function Navigation({ onOpenDrawer }: Props) {
               { name: "Eventos", href: "/events" },
               { name: "Aliados", href: "/partners" },
             ].map((item, index) => (
-              <motion.button
+              <MotionLink
                 key={item.name}
-                onClick={() => { router.push(item.href); setIsMenuOpen(false) }}
+                href={item.href}
+                onClick={() => setIsMenuOpen(false)}
                 className="block text-foreground/80 hover:text-primary transition-colors text-lg font-medium w-full text-left"
                 initial={{ x: -20, opacity: 0 }}
                 animate={isMenuOpen ? { x: 0, opacity: 1 } : { x: -20, opacity: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
                 {item.name}
-              </motion.button>
+              </MotionLink>
             ))}
+
             <Button
               onClick={() => { onOpenDrawer?.(); setIsMenuOpen(false) }}
               className="w-full bg-gradient-red mt-6 animate-gradient"
