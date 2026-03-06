@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Calendar, MapPin, X, ArrowRight, Plane, Trophy, Star, Rocket, Car } from "lucide-react"
+import { Calendar, MapPin, X, ArrowRight, Plane, Rocket, Car } from "lucide-react"
 
 type Event = {
   id: number
@@ -13,11 +12,11 @@ type Event = {
   location: string
   category: string
   role: string
-  image: string
   summary: string
   body: string[]
   highlights: string[]
   icon: React.ElementType
+  blobKey?: string
 }
 
 const events: Event[] = [
@@ -29,9 +28,7 @@ const events: Event[] = [
     location: "Colombia",
     category: "feria",
     role: "Expositores",
-    image: "/events/fair-colombia.jpg",
-    summary:
-      "Un hito estratégico que consolidó nuestra presencia en el mercado aeronáutico latinoamericano.",
+    summary: "Un hito estratégico que consolidó nuestra presencia en el mercado aeronáutico latinoamericano.",
     body: [
       "Nuestra participación como expositores en F-AIR Colombia 2025 marcó un hito estratégico para AeroLux Panamá y MITI Group Inc., consolidando nuestra presencia en el mercado aeronáutico latinoamericano.",
       "F-AIR es uno de los eventos aeronáuticos más importantes de la región, reuniendo fabricantes, operadores, autoridades aeronáuticas, empresas MRO, aviación ejecutiva y defensa. Nuestra presencia no fue únicamente comercial; fue una declaración clara de expansión regional.",
@@ -53,9 +50,7 @@ const events: Event[] = [
     location: "Cartago, Colombia",
     category: "aviacion",
     role: "Expositores",
-    image: "/events/fly-in-cartago.jpg",
-    summary:
-      "Reafirmamos nuestro compromiso con la aviación general en Centroamérica y exploramos mercados de expansión.",
+    summary: "Reafirmamos nuestro compromiso con la aviación general en Centroamérica y exploramos mercados de expansión.",
     body: [
       "Nuestra participación como expositores en Fly-In Cartago 2024 reafirmó nuestro compromiso con la aviación general en Centroamérica.",
       "Este evento, organizado por la comunidad aeronáutica regional, reúne pilotos, propietarios de aeronaves, escuelas de vuelo y empresas del sector.",
@@ -77,9 +72,7 @@ const events: Event[] = [
     location: "Panamá",
     category: "lujo",
     role: "Patrocinadores",
-    image: "/events/ferrari-track-day.jpg",
-    summary:
-      "La sinergia natural entre la aviación ejecutiva y el mundo del alto rendimiento automotriz.",
+    summary: "La sinergia natural entre la aviación ejecutiva y el mundo del alto rendimiento automotriz.",
     body: [
       "Nuestra participación como patrocinadores en el Ferrari Track Day 2025 consolidó la sinergia natural entre la aviación ejecutiva y el mundo del alto rendimiento automotriz.",
       "AeroLux Panamá comparte con Ferrari los valores de precisión, exclusividad, desempeño y pasión por la ingeniería. Este evento reunió a propietarios, empresarios y amantes del lujo en un entorno de alto nivel.",
@@ -97,13 +90,12 @@ const events: Event[] = [
     id: 4,
     title: "Concurso Colombiano de Cohetería Deportiva ALAS",
     shortTitle: "Cohetería ALAS",
+    blobKey: "coheteria-alas-2025",
     date: "2025",
     location: "Colombia",
     category: "aeroespacial",
     role: "Patrocinadores",
-    image: "/partners/alas-corp.png",
-    summary:
-      "Apoyando el futuro del talento técnico y científico aeroespacial de Latinoamérica.",
+    summary: "Apoyando el futuro del talento técnico y científico aeroespacial de Latinoamérica.",
     body: [
       "En alianza con ALAS, participamos como patrocinadores del Concurso Colombiano de Cohetería Deportiva 2025, un evento que impulsa la innovación, la ingeniería y el talento joven en el sector aeroespacial.",
       "Este evento representa la evolución natural del ecosistema aeronáutico hacia el ámbito espacial. Para MITI Group y AeroLux, apoyar este tipo de iniciativas significa invertir en el futuro del talento técnico y científico de la región.",
@@ -126,13 +118,54 @@ const categoryColors: Record<string, string> = {
   aeroespacial: "bg-primary/10 border-primary/20 text-primary",
 }
 
+function getEventKey(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+}
+
+function ImageSkeleton() {
+  return (
+    <div className="absolute inset-0 z-10 bg-muted/20 animate-pulse overflow-hidden">
+      <div
+        className="absolute inset-0 -translate-x-full animate-[shimmer_1.8s_infinite]"
+        style={{
+          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%)",
+        }}
+      />
+    </div>
+  )
+}
+
 export default function EventsPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [eventImages, setEventImages] = useState<Record<string, string>>({})
+  const [imagesLoading, setImagesLoading] = useState(true)
+  const [loadedImgs, setLoadedImgs] = useState<Record<string, boolean>>({})
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) setEventImages(data)
+        setImagesLoading(false)
+      })
+      .catch(() => setImagesLoading(false))
+  }, [])
+
+  const resolveImage = (event: Event): string | undefined => {
+    const key = event.blobKey ?? getEventKey(event.title)
+    return eventImages[key]
+  }
+
+  const handleImgLoad = (title: string) => {
+    setLoadedImgs((prev) => ({ ...prev, [title]: true }))
+  }
 
   return (
     <div className="min-h-screen mt-4 bg-gradient-to-br from-background via-muted/30 to-secondary/20">
-
-      {/* Hero */}
       <section className="pt-28 pb-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl" />
@@ -170,6 +203,10 @@ export default function EventsPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {events.map((event, i) => {
               const Icon = event.icon
+              const imgUrl = resolveImage(event)
+              const imgLoaded = loadedImgs[event.title]
+              const showSkeleton = imagesLoading || (!!imgUrl && !imgLoaded)
+
               return (
                 <motion.div
                   key={event.id}
@@ -179,36 +216,38 @@ export default function EventsPage() {
                   onClick={() => setSelectedEvent(event)}
                   className="group cursor-pointer"
                 >
-                  <div className="relative h-72 rounded-2xl overflow-hidden glass-strong border border-white/5 hover:border-primary/20 transition-all duration-500">
+                  <div className="relative h-72 rounded-2xl overflow-hidden glass-strong border border-white/5 hover:border-primary/20 transition-all duration-500 bg-black">
+
+                    {/* Shimmer skeleton */}
+                    {showSkeleton && <ImageSkeleton />}
+
                     {/* Image */}
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      onError={(e) => {
-                        // Fallback gradient if image not found
-                        const target = e.target as HTMLImageElement
-                        target.style.display = "none"
-                      }}
-                    />
+                    {imgUrl && (
+                      <img
+                        src={imgUrl}
+                        alt={event.title}
+                        onLoad={() => handleImgLoad(event.title)}
+                        className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+                      />
+                    )}
 
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
                     {/* Role badge */}
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-4 left-4 z-20">
                       <span className={`text-xs font-semibold tracking-widest uppercase border rounded-full px-3 py-1 ${categoryColors[event.category]}`}>
                         {event.role}
                       </span>
                     </div>
 
                     {/* Icon */}
-                    <div className="absolute top-4 right-4 glass rounded-full p-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-4 right-4 z-20 glass rounded-full p-2 opacity-60 group-hover:opacity-100 transition-opacity">
                       <Icon className="h-4 w-4 text-primary" />
                     </div>
 
                     {/* Bottom content */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
                       <div className="flex items-center gap-2 mb-2 text-white/50 text-xs tracking-wider">
                         <MapPin className="h-3 w-3" />
                         <span>{event.location}</span>
@@ -263,20 +302,23 @@ export default function EventsPage() {
                 transition={{ delay: 0.2, duration: 0.6 }}
                 className="relative md:w-1/2 h-72 md:h-full flex-shrink-0 overflow-hidden bg-black"
               >
-                <img
-                  src={selectedEvent.image}
-                  alt={selectedEvent.title}
-                  className="w-full h-full object-cover opacity-80"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.style.display = "none"
-                  }}
-                />
-                {/* Diagonal overlay for depth */}
+                {/* Skeleton for modal image */}
+                {resolveImage(selectedEvent) && !loadedImgs[selectedEvent.title] && (
+                  <ImageSkeleton />
+                )}
+
+                {resolveImage(selectedEvent) && (
+                  <img
+                    src={resolveImage(selectedEvent)}
+                    alt={selectedEvent.title}
+                    onLoad={() => handleImgLoad(selectedEvent.title)}
+                    className={`w-full h-full object-cover transition-opacity duration-500 ${loadedImgs[selectedEvent.title] ? "opacity-80" : "opacity-0"}`}
+                  />
+                )}
+
                 <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-transparent to-primary/20" />
 
-                {/* Floating event meta */}
-                <div className="absolute bottom-8 left-8 right-8">
+                <div className="absolute bottom-8 left-8 right-8 z-20">
                   <span className={`text-xs font-semibold tracking-widest uppercase border rounded-full px-3 py-1 ${categoryColors[selectedEvent.category]}`}>
                     {selectedEvent.role}
                   </span>
@@ -294,7 +336,6 @@ export default function EventsPage() {
                 className="md:w-1/2 flex flex-col overflow-y-auto"
                 style={{ background: "hsl(0, 0%, 0%, 0.7)" }}
               >
-                {/* Close button */}
                 <div className="flex justify-end p-6 pb-0 flex-shrink-0">
                   <button
                     onClick={() => setSelectedEvent(null)}
@@ -305,7 +346,6 @@ export default function EventsPage() {
                 </div>
 
                 <div className="px-8 pb-10 pt-4 flex flex-col gap-6">
-                  {/* Title */}
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -319,10 +359,8 @@ export default function EventsPage() {
                     </p>
                   </motion.div>
 
-                  {/* Divider */}
                   <div className="h-px bg-primary/20 w-16" />
 
-                  {/* Body paragraphs */}
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -336,7 +374,6 @@ export default function EventsPage() {
                     ))}
                   </motion.div>
 
-                  {/* Highlights */}
                   <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
