@@ -23,19 +23,16 @@ export const metadata: Metadata = {
   description: "Seguridad, exclusividad y servicio premium en cada experiencia.",
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable}`}>
       <body className="font-sans antialiased custom-cursor">
+        {/* Cursor elements must exist before CursorProvider runs */}
+        <div className="cursor-dot" id="cursor-dot" style={{ display: "none" }}></div>
+        <div className="cursor-ring" id="cursor-ring" style={{ display: "none" }}></div>
         <CursorProvider />
         <NavigationWithDrawer />
         {children}
-        <div className="cursor-dot" id="cursor-dot"></div>
-        <div className="cursor-ring" id="cursor-ring"></div>
         <Footer />
       </body>
     </html>

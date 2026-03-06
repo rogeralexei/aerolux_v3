@@ -101,7 +101,7 @@ const events: Event[] = [
     location: "Colombia",
     category: "aeroespacial",
     role: "Patrocinadores",
-    image: "/events/coheteria-alas.jpg",
+    image: "/partners/alas-corp.png",
     summary:
       "Apoyando el futuro del talento técnico y científico aeroespacial de Latinoamérica.",
     body: [

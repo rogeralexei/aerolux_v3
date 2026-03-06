@@ -4,10 +4,17 @@ import { useEffect } from "react"
 
 export function CursorProvider() {
   useEffect(() => {
+    // Don't initialize on touch/tablet devices
+    if (window.matchMedia("(pointer: coarse)").matches) return
+
     const cursorDot = document.getElementById("cursor-dot") as HTMLDivElement
     const cursorRing = document.getElementById("cursor-ring") as HTMLDivElement
 
     if (!cursorDot || !cursorRing) return
+
+    // Show cursors only on fine-pointer devices
+    cursorDot.style.display = "block"
+    cursorRing.style.display = "block"
 
     const moveCursor = (e: MouseEvent) => {
       requestAnimationFrame(() => {
@@ -72,10 +79,8 @@ export function CursorProvider() {
       return interactiveElements
     }
 
-    // Attach on mount
     let interactiveElements = attachListeners()
 
-    // Re-attach when DOM changes (e.g. page navigation adds new elements)
     const observer = new MutationObserver(() => {
       interactiveElements.forEach((el) => {
         el.removeEventListener("mouseenter", handleMouseEnter)
@@ -90,7 +95,7 @@ export function CursorProvider() {
       document.removeEventListener("mousemove", moveCursor)
       document.removeEventListener("selectstart", handleTextSelect)
       interactiveElements.forEach((el) => {
-        el.removeEventListener("mouseenter", handleMouseEnter)
+        el.removeEventListener("mouseenter", handleMouseLeave)
         el.removeEventListener("mouseleave", handleMouseLeave)
       })
       observer.disconnect()
