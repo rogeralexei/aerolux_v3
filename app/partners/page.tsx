@@ -93,11 +93,15 @@ function getPartnerKey(name: string): string {
     .replace(/^-|-$/g, "")
 }
 
-// Shimmer skeleton for image placeholder
 function ImageSkeleton() {
   return (
-    <div className="w-full h-full bg-muted/30 animate-pulse">
-      <div className="w-full h-full bg-gradient-to-r from-muted/20 via-muted/40 to-muted/20 animate-[shimmer_1.5s_infinite]" />
+    <div className="absolute inset-0 overflow-hidden bg-white/5">
+      <div
+        className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite]"
+        style={{
+          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%)",
+        }}
+      />
     </div>
   )
 }
@@ -184,9 +188,7 @@ export default function PartnersPage() {
                   {/* Image */}
                   <div className="relative h-52 overflow-hidden bg-muted/20 flex-shrink-0">
                     {/* Skeleton — visible while API is loading or image hasn't decoded yet */}
-                    {showSkeleton && (
-                      <div className="absolute inset-0 bg-muted/30 animate-pulse" />
-                    )}
+                    {showSkeleton && <ImageSkeleton />}
 
                     {/* Actual image — rendered but invisible until loaded */}
                     {imgUrl && (
@@ -277,7 +279,7 @@ export default function PartnersPage() {
                 <div className="relative bg-muted/20 min-h-[300px] md:min-h-full overflow-hidden">
                   {/* Skeleton for modal image */}
                   {resolveImage(selectedPartner) && !loadedImgs[selectedPartner.name] && (
-                    <div className="absolute inset-0 bg-muted/30 animate-pulse" />
+                    <ImageSkeleton />
                   )}
                   {resolveImage(selectedPartner) && (
                     <img

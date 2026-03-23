@@ -1,6 +1,8 @@
 import { BlobServiceClient } from "@azure/storage-blob"
 import { NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic"
+
 export async function GET() {
   try {
     const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING!
@@ -23,15 +25,10 @@ export async function GET() {
 
       const url = `https://${blobServiceClient.accountName}.blob.core.windows.net/${containerName}/${name}`
 
-      // Try to infer category from folder name or filename prefix
-      // e.g. "aircraft/jet-interior.jpg" or "aircraft-jet-interior.jpg"
-      let category = "experience"
-      const lowerName = name.toLowerCase()
-      if (lowerName.includes("aircraft") || lowerName.includes("jet") || lowerName.includes("plane")) {
-        category = "aircraft"
-      } else if (lowerName.includes("destination") || lowerName.includes("city") || lowerName.includes("landscape")) {
-        category = "destinations"
-      }
+      // Infer category from folder prefix, e.g. "lifestyle/photo.jpg" → "lifestyle"
+      const folder = name.includes("/") ? name.split("/")[0].toLowerCase() : ""
+      const validCategories = ["lifestyle", "clientes", "vistas"]
+      const category = validCategories.includes(folder) ? folder : "lifestyle"
 
       // Use filename as title (strip extension, replace dashes/underscores)
       const baseName = name.split("/").pop()?.replace(/\.[^.]+$/, "") ?? name

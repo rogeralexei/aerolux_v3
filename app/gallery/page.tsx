@@ -24,6 +24,7 @@ export default function GalleryPage() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [loadedImgs, setLoadedImgs] = useState<Record<number, boolean>>({})
 
   useEffect(() => {
     fetch("/api/gallery")
@@ -38,9 +39,9 @@ export default function GalleryPage() {
 
   const categories = [
     { id: "all", label: "Todo", icon: Camera },
-    // { id: "aircraft", label: "Aeronaves", icon: Plane },
-    // { id: "destinations", label: "Destinos", icon: Camera },
-    // { id: "experience", label: "Experiencia", icon: Video },
+    { id: "lifestyle", label: "Lifestyle", icon: Video },
+    { id: "clientes", label: "Clientes", icon: Plane },
+    { id: "vistas", label: "Vistas", icon: Camera },
   ]
 
   const filteredMedia =
@@ -175,10 +176,20 @@ export default function GalleryPage() {
                 >
                   <Card className="glass overflow-hidden hover:scale-105 transition-all duration-500 relative">
                     <div className="relative h-80 overflow-hidden bg-muted/30">
+                      {/* Shimmer skeleton until image loads */}
+                      {!loadedImgs[media.id] && (
+                        <div className="absolute inset-0 overflow-hidden bg-white/5">
+                          <div
+                            className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite]"
+                            style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%)" }}
+                          />
+                        </div>
+                      )}
                       <img
                         src={media.thumbnail}
                         alt={media.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        onLoad={() => setLoadedImgs((prev) => ({ ...prev, [media.id]: true }))}
+                        className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${loadedImgs[media.id] ? "opacity-100" : "opacity-0"}`}
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
