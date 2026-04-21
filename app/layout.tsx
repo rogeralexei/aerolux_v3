@@ -28,12 +28,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable}`}>
       <body className="font-sans antialiased custom-cursor">
         {/* Cursor elements must exist before CursorProvider runs */}
-        <div className="cursor-dot" id="cursor-dot" style={{ display: "none" }}></div>
+        This site is currently under construction. Please check back later for updates and exciting content! We appreciate your patience and understanding as we work to create an amazing experience for you.
+        {/* <div className="cursor-dot" id="cursor-dot" style={{ display: "none" }}></div>
         <div className="cursor-ring" id="cursor-ring" style={{ display: "none" }}></div>
         <CursorProvider />
         <NavigationWithDrawer />
         {children}
-        <Footer />
+        <Footer /> */}
       </body>
     </html>
   )
