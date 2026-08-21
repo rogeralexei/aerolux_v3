@@ -11,24 +11,28 @@ type Partner = {
   fullDescription: string
   category: string
   website?: string
+  blobKey?: string
 }
 
 const partners: Partner[] = [
   {
     name: "My Flight Corp.",
     category: "Aviación",
+    blobKey: "my-flight",
     shortDescription: "Nuestro aliado estratégico en ala fija, brindando soluciones de vuelo charter con los más altos estándares de seguridad y confort para nuestros clientes en toda la región.",
     fullDescription: "My Flight Corp. es nuestro aliado estratégico en ala fija. Juntos ofrecemos soluciones de vuelo charter con los más altos estándares de seguridad y confort. Su flota moderna y equipo especializado nos permite brindar cobertura regional con flexibilidad y confiabilidad operacional.",
   },
   {
     name: "Air Supplies International",
     category: "Operaciones",
+    blobKey: "airsupplies",
     shortDescription: "El corazón de nuestras operaciones de helicóptero. Proveen suministros aeronáuticos de primera calidad que garantizan la continuidad y seguridad de nuestras misiones.",
     fullDescription: "Air Supplies International es el corazón de nuestros helicópteros. Proveedores de suministros aeronáuticos de primera calidad, garantizan la continuidad operacional y la seguridad de cada misión. Su red de distribución internacional nos permite mantenernos abastecidos en cualquier destino.",
   },
   {
     name: "AeroErmo Magazine",
     category: "Media",
+    blobKey: "aerodermo",
     shortDescription: "Nuestro International Media Partner. Una publicación de referencia en la industria aeronáutica latinoamericana que amplifica nuestra presencia en el ecosistema del sector.",
     fullDescription: "AeroErmo Magazine es nuestro International Media Partner. Esta publicación de referencia en la industria aeronáutica latinoamericana amplifica nuestra presencia en el ecosistema del sector, conectándonos con lectores, profesionales y tomadores de decisión en toda la región.",
     website: "https://aeroermo.com",
@@ -36,6 +40,7 @@ const partners: Partner[] = [
   {
     name: "AeroShell",
     category: "Combustibles",
+    blobKey: "aeroshell",
     shortDescription: "Nuestros aliados en calidad y seguridad de combustibles. AeroShell provee lubricantes y combustibles de aviación que cumplen con los estándares internacionales más exigentes.",
     fullDescription: "AeroShell es nuestra alianza en calidad y seguridad de combustibles. Como líder mundial en lubricantes y combustibles de aviación, nos garantizan productos que cumplen con los estándares internacionales más exigentes, protegiendo nuestros motores y operaciones en todo momento.",
     website: "https://aeroshell.com",
@@ -43,24 +48,28 @@ const partners: Partner[] = [
   {
     name: "Autódromo Panamá",
     category: "Lifestyle",
+    blobKey: "autodromo",
     shortDescription: "Nuestro socio clave en experiencias lifestyle de alto rendimiento. Compartimos la pasión por la velocidad, la precisión y la excelencia en cada evento que co-organizamos.",
     fullDescription: "Autódromo Panamá es nuestro socio clave en experiencias lifestyle de alto rendimiento. Compartimos la pasión por la velocidad, la precisión y la excelencia. Juntos co-organizamos eventos exclusivos que conectan el mundo de la aviación ejecutiva con el automovilismo de alto nivel.",
   },
   {
     name: "Gran Fondo PROBISIDA",
     category: "RSE",
+    blobKey: "granfondo",
     shortDescription: "Colaboramos con el Gran Fondo por la Vida apoyando causas sociales que impactan positivamente a comunidades vulnerables, reafirmando nuestro compromiso con la responsabilidad social.",
     fullDescription: "Colaboramos con el Gran Fondo por el Derecho a la Vida - PROBISIDA, apoyando causas sociales que impactan positivamente a comunidades vulnerables. Esta alianza reafirma nuestro compromiso con la responsabilidad social empresarial y el desarrollo humano sostenible en Panamá.",
   },
   {
     name: "Ferrari Panamá",
     category: "Lujo",
+    blobKey: "ferrari",
     shortDescription: "Una alianza de lujo y alta performance que une dos mundos de excelencia: la aviación ejecutiva y el automovilismo de élite. Dealer oficial Ferrari en Panamá.",
     fullDescription: "Ferrari Panamá — Dealer Oficial — es nuestra alianza de lujo y alta performance. Compartimos valores de precisión, exclusividad y pasión por la ingeniería. Esta sinergia nos posiciona en el segmento más premium del mercado, conectando a clientes que buscan la excelencia en cada experiencia.",
   },
   {
     name: "Snap-on Tools",
     category: "Herramientas",
+    blobKey: "snapon",
     shortDescription: "En AeroLux Panamá utilizamos exclusivamente herramientas Snap-on, garantizando la precisión y confiabilidad requerida en cada intervención técnica de nuestras aeronaves.",
     fullDescription: "En AeroLux Panamá utilizamos exclusivamente herramientas Snap-on en nuestras operaciones de mantenimiento. Esta decisión garantiza la precisión y confiabilidad requerida en cada intervención técnica. Snap-on es sinónimo de calidad profesional, y es el estándar que nuestros técnicos exigen.",
     website: "https://snapon.com",
@@ -68,6 +77,7 @@ const partners: Partner[] = [
   {
     name: "ALAS Corp.",
     category: "Aeroespacial",
+    blobKey: "alas",
     shortDescription: "Aliados en logística, tecnología aeroespacial e innovación. ALAS Corp. impulsa el desarrollo del ecosistema aeroespacial latinoamericano junto a AeroLux y MITI Group.",
     fullDescription: "ALAS Corp. es nuestro aliado en logística, tecnología aeroespacial e innovación. Juntos impulsamos el desarrollo del ecosistema aeroespacial latinoamericano, apoyando iniciativas STEM, formación de talento joven y proyectos de cohetería deportiva que representan el futuro del sector en la región.",
   },
@@ -124,7 +134,7 @@ export default function PartnersPage() {
   }, [])
 
   const resolveImage = (partner: Partner): string | undefined => {
-    const key = getPartnerKey(partner.name)
+    const key = partner.blobKey ?? getPartnerKey(partner.name)
     return partnerImages[key]
   }
 
